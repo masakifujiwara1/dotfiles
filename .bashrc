@@ -94,6 +94,7 @@ alias l='ls -CF'
 alias cw='cd ~/catkin_ws'
 alias cs='cd ~/catkin_ws/src'
 alias cb='cd ~/catkin_ws && catkin build'
+alias rn='roscd nav_cloning'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -122,16 +123,32 @@ source /opt/ros/melodic/setup.bash
 source ~/catkin_ws/devel/setup.bash
 export ROS_MASTER_URI=http://localhost:11311
 export ROS_HOSTNAME=localhost
-
-export DISPLAY=localhost:0.0
-export LIBGL_ALWAYS_INDIRECT=0
-export GAZEBO_IP=127.0.0.1
 source ~/catkin_ws/devel/setup.bash
-
-#source /opt/OpenFOAM/OpenFOAM-v2012/etc/bashrc
 export TURTLEBOT3_MODEL=burger
 
-source ~/catkin_ws/devel/setup.bash
-source /opt/ros/melodic/setup.bash
-source ~/catkin_ws/devel/setup.bash
+source ~/anaconda3/etc/profile.d/conda.sh
+#source ~/turtlebot3pr_ws/devel/setup.bash
+export TURTLEBOT3_MODEL=burger
 
+# ~/.bashrc
+
+eval 
+            __main() {
+                local major="${BASH_VERSINFO[0]}"
+                local minor="${BASH_VERSINFO[1]}"
+
+                if ((major > 4)) || { ((major == 4)) && ((minor >= 1)); }; then
+                    source <(/usr/local/bin/starship init bash --print-full-init)
+                else
+                    source /dev/stdin <<<"$(/usr/local/bin/starship init bash --print-full-init)"
+                fi
+            }
+            __main
+            unset -f __main
+export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+eval "$(zoxide init bash)"
+
+export GAZEBO_MODEL_PATH=/home/fmasa/catkin_ws/src/nav_cloning/tsudanuma2-3:${GAZEBO_MODEL_PATH}
