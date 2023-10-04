@@ -95,6 +95,7 @@ alias cw='cd ~/catkin_ws'
 alias cs='cd ~/catkin_ws/src'
 alias cb='cd ~/catkin_ws && catkin build'
 alias rn='roscd nav_cloning'
+alias open='xdg-open .'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -119,16 +120,19 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
-source /opt/ros/melodic/setup.bash
-source ~/catkin_ws/devel/setup.bash
-export ROS_MASTER_URI=http://localhost:11311
-export ROS_HOSTNAME=localhost
-source ~/catkin_ws/devel/setup.bash
-export TURTLEBOT3_MODEL=burger
+# source /opt/ros/noetic/setup.bash
+# source ~/catkin_ws/devel/setup.bash
+# source ~/test_ws/devel/setup.bash
+# source ~/cross_road_ws/devel/setup.bash
+# source ~/move_base_ws/devel/setup.bash
+# source ~/cartographer_ws/devel/setup.bash
+# export ROS_MASTER_URI=http://localhost:11311
+# export ROS_HOSTNAME=localhost
+# export TURTLEBOT3_MODEL=burger
 
-source ~/anaconda3/etc/profile.d/conda.sh
+# source ~/anaconda3/etc/profile.d/conda.sh
 #source ~/turtlebot3pr_ws/devel/setup.bash
-export TURTLEBOT3_MODEL=burger
+export TURTLEBOT3_MODEL=waffle_pi
 
 # ~/.bashrc
 
@@ -145,10 +149,94 @@ eval
             }
             __main
             unset -f __main
-export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+# export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+export PATH="/home/fmasa/.local/bin:$PATH"
+source /usr/share/doc/fzf/examples/key-bindings.bash
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 eval "$(zoxide init bash)"
 
-export GAZEBO_MODEL_PATH=/home/fmasa/catkin_ws/src/nav_cloning/tsudanuma2-3:${GAZEBO_MODEL_PATH}
+# export GAZEBO_MODEL_PATH=/home/fmasa/catkin_ws/src/nav_cloning/tsudanuma2-3:${GAZEBO_MODEL_PATH}
+# export GAZEBO_MODEL_PATH=/home/fmasa/catkin_ws/src/nav_cloning/models:${GAZEBO_MODEL_PATH}
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/fmasa/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/fmasa/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/fmasa/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/fmasa/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+export GAZEBO_MODEL_PATH=/home/fmasa/catkin_ws/src/real_tsudanuma2-3_sim/models:${GAZEBO_MODEL_PATH}
+
+# export CNOID_USE_GLSL=1
+# ulimit -c unlimited
+export GAZEBO_MODEL_PATH=/home/fmasa/catkin_ws/src/v_tsudanuma/models:${GAZEBO_MODEL_PATH}
+export GAZEBO_MODEL_PATH=/home/fmasa/catkin_ws/src/gazebo_sfm_plugin/media/models:${GAZEBO_MODEL_PATH}
+
+export GAZEBO_MODEL_PATH=/home/fmasa/catkin_ws/src/orne_navigation/orne_description/urdf:${GAZEBO_MODEL_PATH}
+export GAZEBO_RESOURCE_PATH=/home/fmasa/catkin_ws/src/orne_navigation/orne_description/urdf:${GAZEBO_RESOURCE_PATH}
+
+# export ROS1_PACKAGE_PATH=/home/fmasa/catkin_ws/src/real_tsudanuma2-3_sim/package.xml
+
+# export ROS_VERSION=1
+# source /opt/ros/foxy/setup.bash
+source /usr/share/gazebo/setup.bash
+
+## ROS ##
+LOCAL_IP=`hostname -I | cut -d' ' -f1`
+alias noetic='
+    source /opt/ros/noetic/setup.bash;
+    # export ROS_WORKSPACE=${HOME}/catkin_ws;
+    # export ROS_PACKAGE_PATH=${ROS_WORKSPACE}/:$ROS_PACKAGE_PATH;
+    # export ROS_IP=${LOCAL_IP};
+    source ~/catkin_ws/devel/setup.bash;
+    # source ~/cartographer_ws/devel/setup.bash;
+    export ROS_MASTER_URI=http://localhost:11311;
+    # source ${ROS_WORKSPACE}/devel/setup.bash;
+    export ROS_HOSTNAME=localhost;
+    # export PS1="\e[1;32m\]\u@\h\e[1;31m\]<noetic>\e[m\]:\e[1;34m\]\w\e[m\]$ "
+    '
+alias foxy='
+    source /opt/ros/foxy/setup.bash;
+    # export ROS_WORKSPACE=${HOME}/pcd_ws;
+    export ROS_WORKSPACE=${HOME}/ros2_ws;
+    source ${ROS_WORKSPACE}/install/local_setup.bash;
+    export ROS_LOCALHOST_ONLY=1;
+    export PS1="\e[1;32m\]\u@\h\e[1;33m\]<foxy>\e[m\]:\e[1;34m\]\w\e[m\]$ "
+    '
+
+function ros_make() {
+    dir=$PWD;
+    cd $ROS_WORKSPACE;
+    if [[ $ROS_DISTRO == "noetic" ]]; then
+        catkin build;
+        . devel/setup.bash;
+    elif [[ $ROS_DISTRO == "foxy" ]]; then
+        if [ $# -gt 0 ]; then
+            colcon build --packages-select $1 --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release;
+        else
+            colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release;
+        fi;
+        . install/local_setup.bash;
+    else
+        echo "set ros distribution";
+    fi
+    cd $dir;
+}
+
+export ROS_DOMAIN_ID=30 #TURTLEBOT3
+export GAZEBO_MODEL_PATH=/home/fmasa/ros2_ws/src/test_ros2_navigation/models:${GAZEBO_MODEL_PATH}
+export GAZEBO_MODEL_PATH=/home/fmasa/catkin_ws/src/v_tsukuba/models:${GAZEBO_MODEL_PATH}
+
+# export CMAKE_PREFIX_PATH=/home/fmasa/livox_ws/install/livox_ros_driver2:$CMAKE_PREFIX_PATH
+
+# noetic
+foxy
